@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "solmate/tokens/ERC721.sol";
+import "openzeppelin-contracts/contracts/access/Ownable.sol";
+import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
-contract DraupMembershipERC721 is ERC721 {
+contract DraupMembershipERC721 is ERC721, Ownable {
 
     constructor() ERC721("Draup Membership", "DRAUP") {}
 
