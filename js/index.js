@@ -14,4 +14,8 @@ const tree = StandardMerkleTree.of(values, ["address", "uint256"]);
 console.log('Merkle Root:', tree.root);
 
 // (4)
-fs.writeFileSync("tree.json", JSON.stringify(tree.dump()));
+const filePrefix = Date.now();
+const year = new Date().getFullYear();
+const month = new Date().getMonth() + 1;
+const day = new Date().getDate();
+fs.writeFileSync(`output/${year}-${month}-${day}-${filePrefix}-merkle-tree.json`, JSON.stringify(tree.dump()));
