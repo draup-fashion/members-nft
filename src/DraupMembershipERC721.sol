@@ -17,6 +17,8 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     // Mapping to track who used their allowlist spot
     mapping(address => bool) public claimed;
 
+    error InvalidProof();
+
     function toBytes32(address addr) pure internal returns (bytes32) {
         return bytes32(uint256(uint160(addr)));
     }
@@ -24,7 +26,9 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     function mint(bytes32[] calldata merkleProof) public {
         require(claimed[msg.sender] == false, "already claimed");
         claimed[msg.sender] = true;
-        require(MerkleProof.verify(merkleProof, merkleRoot, toBytes32(msg.sender)) == true, "invalid merkle proof");
+        if (MerkleProof.verify(merkleProof, merkleRoot, toBytes32(msg.sender)) != true) {
+            revert InvalidProof();
+        }
         nextTokenId++;
         _mint(msg.sender, nextTokenId);
     }
@@ -37,7 +41,6 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     {
         return _BaseURI;
     }
-
 
     function withdrawAll() external {
         require(address(this).balance > 0, "Zero balance");
