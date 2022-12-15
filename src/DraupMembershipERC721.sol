@@ -7,7 +7,8 @@ import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable {
-
+    uint256 public immutable MAX_SUPPLY = 989;
+    uint256 public immutable ROYALTY = 7500;
     constructor() ERC721("Draup Membership", "DRAUP") {}
 
     uint256 public nextTokenId;
@@ -18,17 +19,20 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     mapping(address => bool) public claimed;
 
     error InvalidProof();
+    error AlreadyClaimed();
 
     function toBytes32(address addr) pure internal returns (bytes32) {
         return bytes32(uint256(uint160(addr)));
     }
 
     function mint(bytes32[] calldata merkleProof) public {
-        require(claimed[msg.sender] == false, "already claimed");
-        claimed[msg.sender] = true;
-        if (MerkleProof.verify(merkleProof, merkleRoot, toBytes32(msg.sender)) != true) {
+        if (!MerkleProof.verify(merkleProof, merkleRoot, toBytes32(msg.sender))) {
             revert InvalidProof();
         }
+        if (claimed[msg.sender]) {
+            revert AlreadyClaimed();
+        }
+        claimed[msg.sender] = true;
         nextTokenId++;
         _mint(msg.sender, nextTokenId);
     }
@@ -40,6 +44,12 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         returns (string memory)
     {
         return _BaseURI;
+    }
+
+    // Admin
+
+    function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
+        merkleRoot = _merkleRoot;
     }
 
     function withdrawAll() external {

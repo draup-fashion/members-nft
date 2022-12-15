@@ -17,8 +17,17 @@ contract DraupMembershipERC721AllowListTest is Test {
         vm.deal(minter, 100 ether);
     }
 
+    function testMintBlocksInvalidMerkleProof() public {
+        bytes32[] memory merkleProof = new bytes32[](3);
+        merkleProof[0] = bytes32('med3af');
+        merkleProof[1] = bytes32('med3af');
+        merkleProof[2] = bytes32('med3af');
+        vm.startPrank(minter);
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.InvalidProof.selector));
+        draupMembershipERC721.mint(merkleProof);
+    }
 
-    function testMint() public {
+    function testMintAllowsValidMerkleProof() public {
         bytes32[] memory merkleProof = new bytes32[](3);
         merkleProof[0] = bytes32('med3af');
         merkleProof[1] = bytes32('med3af');
