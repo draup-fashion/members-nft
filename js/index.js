@@ -1,5 +1,5 @@
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import fs from "fs";
+const { StandardMerkleTree } = require("@openzeppelin/merkle-tree");
+const fs = require('fs');
 
 // (1)
 const values = [
