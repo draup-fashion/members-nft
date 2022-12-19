@@ -26,7 +26,8 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     }
 
     function mint(bytes32[] calldata merkleProof) public {
-        if (!MerkleProof.verify(merkleProof, merkleRoot, toBytes32(msg.sender))) {
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, 1))));
+        if (!MerkleProof.verify(merkleProof, merkleRoot, leaf)) {
             revert InvalidProof();
         }
         if (claimed[msg.sender]) {
