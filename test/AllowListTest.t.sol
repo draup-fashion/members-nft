@@ -13,6 +13,8 @@ contract DraupMembershipERC721AllowListTest is Test {
     bytes32[] merkleProof = new bytes32[](3);
 
     function setUp() public {
+        // transfer lock only works after lockup period number of blocks
+        vm.roll(1_000_000);
         draupMembershipERC721 = new DraupMembershipERC721();
         draupMembershipERC721.transferOwnership(owner);
         vm.deal(owner, 100 ether);
@@ -43,6 +45,15 @@ contract DraupMembershipERC721AllowListTest is Test {
         emit Transfer(address(0x0), minter, 1);
         vm.startPrank(minter);
         draupMembershipERC721.mint(merkleProof);
+    }
+
+    function testMintPreventsMultipleUses() public {
+        vm.startPrank(minter);
+        draupMembershipERC721.mint(merkleProof);
+        assertEq(draupMembershipERC721.balanceOf(minter), 1);
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.AlreadyClaimed.selector));
+        draupMembershipERC721.mint(merkleProof);
+        assertEq(draupMembershipERC721.balanceOf(minter), 1);
     }
 
 }

@@ -5,10 +5,12 @@ import "openzeppelin-contracts/contracts/access/Ownable.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
+import "openzeppelin-contracts/contracts/utils/Strings.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable {
     uint256 public immutable MAX_SUPPLY = 989;
     uint256 public immutable ROYALTY = 7500;
+    uint256 public immutable MIN_HOLD_BLOCKS = 900_000;
     constructor() ERC721("Draup Membership", "DRAUP") {}
 
     uint256 public nextTokenId;
@@ -16,10 +18,14 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     string _BaseURI = "test";
 
     // Mapping to track who used their allowlist spot
-    mapping(address => bool) public claimed;
+    mapping(address => bool) private _claimed;
+
+    // Mapping to track when tokens were last transferred
+    mapping(uint256 => uint256) private _lastTransfer;
 
     error InvalidProof();
     error AlreadyClaimed();
+    error LockupPeriodNotOver();
 
     function toBytes32(address addr) pure internal returns (bytes32) {
         return bytes32(uint256(uint160(addr)));
@@ -30,12 +36,26 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         if (!MerkleProof.verify(merkleProof, merkleRoot, leaf)) {
             revert InvalidProof();
         }
-        if (claimed[msg.sender]) {
+        if (_claimed[msg.sender]) {
             revert AlreadyClaimed();
         }
-        claimed[msg.sender] = true;
+        _claimed[msg.sender] = true;
         nextTokenId++;
         _mint(msg.sender, nextTokenId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 firstTokenId,
+        uint256 batchSize
+    ) internal virtual override {
+        // assumes chain is past block 900_000
+        if (block.number <= _lastTransfer[firstTokenId] + MIN_HOLD_BLOCKS) {
+            revert LockupPeriodNotOver();
+        }
+        _lastTransfer[firstTokenId] = block.number;
+        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 
     function tokenURI(uint256 tokenId)
@@ -44,7 +64,7 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         override
         returns (string memory)
     {
-        return _BaseURI;
+        return string(abi.encodePacked(_BaseURI, Strings.toString(tokenId)));
     }
 
     // Admin
