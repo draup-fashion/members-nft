@@ -10,7 +10,7 @@ contract DraupMembershipERC721AllowListTest is Test {
     address private owner = vm.addr(uint256(keccak256(abi.encodePacked("owner"))));
     address private minter = vm.addr(uint256(keccak256(abi.encodePacked("minter"))));
     bytes32 private merkleRoot = hex'e58156f1fe47b87b38d2fc90dd2ed37c2ed80c4833b46ef37fd6c10b4f15fadd';
-    bytes32[] merkleProof = new bytes32[](3);
+    bytes32[] private merkleProof = new bytes32[](3);
 
     function setUp() public {
         // transfer lock only works after lockup period number of blocks
