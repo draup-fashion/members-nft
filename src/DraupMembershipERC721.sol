@@ -8,10 +8,13 @@ import "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
 import "openzeppelin-contracts/contracts/utils/Strings.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable {
-    uint256 public immutable MAX_SUPPLY = 989;
+    uint256 public immutable MAX_SUPPLY;
     uint256 public immutable ROYALTY = 7500;
     uint256 public immutable MIN_HOLD_BLOCKS = 900_000;
-    constructor() ERC721("Draup Membership", "DRAUP") {}
+
+    constructor(uint256 maxSupply) ERC721("Draup Membership", "DRAUP") {
+        MAX_SUPPLY = maxSupply;
+    }
 
     uint256 public nextTokenId;
     bytes32 public merkleRoot;
