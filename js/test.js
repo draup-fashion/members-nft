@@ -27,16 +27,15 @@ const filePrefix = Date.now();
 const year = new Date().getFullYear();
 const month = new Date().getMonth() + 1;
 const day = new Date().getDate();
-fs.writeFileSync(`output/mainnet/${year}-${month}-${day}-${filePrefix}-merkle-tree.json`, JSON.stringify(tree.dump()));
+fs.writeFileSync(`output/test/merkle-tree.json`, JSON.stringify(tree.dump()));
 
 
 
 // (5) generate a proof
 for (const [i, v] of tree.entries()) {
-  if (v[0] === minterAddress) {
-    const proof = tree.getProof(i);
-    console.log('Value:', v);
-    console.log('Proof:', proof);
-  }
+  const proof = tree.getProof(i);
+  console.log('Storing proof for:', v);
+  const proofText = `value: ${v}\nproof: ${proof}\n`;
+  fs.writeFileSync(`output/test/proof-${v[0]}`, proofText);
 }
 

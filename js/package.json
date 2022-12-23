@@ -2,9 +2,9 @@
   "name": "draup-member-nft-js",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "test.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test.js",
     "build": "node index.js"
   },
   "author": "",
