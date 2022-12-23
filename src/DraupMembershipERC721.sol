@@ -30,6 +30,7 @@ contract DraupMembershipERC721 is ERC721, Ownable {
 
     error InvalidProof();
     error AlreadyClaimed();
+    error MaxSupplyReached();
     error LockupPeriodNotOver();
 
     function mint(bytes32[] calldata merkleProof) public {
@@ -42,6 +43,9 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         }
         _claimed[msg.sender] = true;
         nextTokenId++;
+        if (nextTokenId > MAX_SUPPLY) {
+            revert MaxSupplyReached();
+        }
         _mint(msg.sender, nextTokenId);
     }
 
