@@ -4,7 +4,7 @@ import "forge-std/Test.sol";
 import "forge-std/console.sol";
 import "../src/DraupMembershipERC721.sol";
 
-contract DraupMembershipERC721AllowListTest is Test {
+contract DraupMembershipERC721MintTest is Test {
     DraupMembershipERC721 public draupMembershipERC721;
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     address private owner = vm.addr(uint256(keccak256(abi.encodePacked("owner"))));
@@ -15,7 +15,7 @@ contract DraupMembershipERC721AllowListTest is Test {
     function setUp() public {
         // transfer lock only works after lockup period number of blocks
         vm.roll(1_000_000);
-        draupMembershipERC721 = new DraupMembershipERC721(10);
+        draupMembershipERC721 = new DraupMembershipERC721(3);
         draupMembershipERC721.transferOwnership(owner);
         vm.deal(owner, 100 ether);
         vm.deal(minter, 100 ether);
@@ -47,7 +47,7 @@ contract DraupMembershipERC721AllowListTest is Test {
         draupMembershipERC721.mint(merkleProof);
     }
 
-    function testMintPreventsMultipleUses() public {
+    function testMintPreventsReuseOfAllowListSpot() public {
         vm.startPrank(minter);
         draupMembershipERC721.mint(merkleProof);
         assertEq(draupMembershipERC721.balanceOf(minter), 1);

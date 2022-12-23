@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "openzeppelin-contracts/contracts/access/Ownable.sol";
-import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
-import "openzeppelin-contracts/contracts/utils/Strings.sol";
+import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {MerkleProof} from "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
+import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
+import {IERC2981, IERC165} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
+
 
 contract DraupMembershipERC721 is ERC721, Ownable {
     uint256 public immutable MAX_SUPPLY;
@@ -29,10 +31,6 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     error InvalidProof();
     error AlreadyClaimed();
     error LockupPeriodNotOver();
-
-    function toBytes32(address addr) pure internal returns (bytes32) {
-        return bytes32(uint256(uint160(addr)));
-    }
 
     function mint(bytes32[] calldata merkleProof) public {
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, 1))));
@@ -69,6 +67,30 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     {
         return string(abi.encodePacked(_BaseURI, Strings.toString(tokenId)));
     }
+
+
+    // Royalties
+    // From https://github.com/holic/web3-scaffold/blob/main/packages/contracts/src/ERC721Base.sol
+
+    function supportsInterface(bytes4 _interfaceId)
+        public
+        view
+        override
+        returns (bool)
+    {
+        return
+            _interfaceId == type(IERC2981).interfaceId ||
+            super.supportsInterface(_interfaceId);
+    }
+
+    function royaltyInfo(uint256, uint256 salePrice)
+        external
+        view
+        returns (address, uint256)
+    {
+        return (address(this), (salePrice * ROYALTY) / 10000);
+    }
+
 
     // Admin
 
