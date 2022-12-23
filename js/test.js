@@ -17,12 +17,12 @@ const values = [
 ];
 
 // (2)
+// create merkle tree
 const tree = StandardMerkleTree.of(values, ["address", "uint256"]);
-
-// (3)
 console.log('Merkle Root:', tree.root);
 
 // (4)
+// store merkle tree
 const filePrefix = Date.now();
 const year = new Date().getFullYear();
 const month = new Date().getMonth() + 1;
@@ -31,7 +31,8 @@ fs.writeFileSync(`output/test/merkle-tree.json`, JSON.stringify(tree.dump()));
 
 
 
-// (5) generate a proof
+// (5)
+// generate and store proofs
 for (const [i, v] of tree.entries()) {
   const proof = tree.getProof(i);
   console.log('Storing proof for:', v);
