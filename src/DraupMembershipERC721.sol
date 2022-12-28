@@ -69,7 +69,8 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         override
         returns (string memory)
     {
-        return string(abi.encodePacked(_BaseURI, Strings.toString(tokenId)));
+        _requireMinted(tokenId);
+        return "https://www.draup.xyz/members/members-01.json";
     }
 
 
