@@ -3,6 +3,7 @@ pragma solidity >=0.8.10 <0.9.0;
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 import "../src/DraupMembershipERC721.sol";
+import "../src/ExampleRenderer.sol";
 
 contract DraupMembershipERC721MetadataTest is Test {
     DraupMembershipERC721 public draupMembershipERC721;
@@ -37,6 +38,22 @@ contract DraupMembershipERC721MetadataTest is Test {
     function testMetadataURI() public {
         string memory uri1 = draupMembershipERC721.tokenURI(1);
         assertEq(uri1, "https://www.draup.xyz/members/members-01.json");
+    }
+
+    function testNonOwnerCannotUpgradeRenderer() public {
+        IRenderer renderer = new ExampleRenderer();
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        draupMembershipERC721.setRenderer(renderer);
+    }
+
+    function testUpgradeRenderer() public {
+        assertEq(address(0), address(draupMembershipERC721.renderer()));
+        IRenderer renderer = new ExampleRenderer();
+        vm.prank(owner);
+        draupMembershipERC721.setRenderer(renderer);
+        assertEq(address(renderer), address(draupMembershipERC721.renderer()));
+        string memory uri1 = draupMembershipERC721.tokenURI(1);
+        assertEq(uri1, "https://www.example.com/1.json");
     }
 
 }

@@ -7,12 +7,14 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {IERC2981, IERC165} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
-
+import {IRenderer} from "./IRenderer.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable {
     uint256 public immutable MAX_SUPPLY;
     uint256 public immutable ROYALTY = 7500;
     uint256 public immutable MIN_HOLD_BLOCKS = 900_000;
+    IRenderer public renderer;
+    string public baseTokenURI;
 
     constructor(uint256 maxSupply) ERC721("Draup Membership", "DRAUP") {
         MAX_SUPPLY = maxSupply;
@@ -70,6 +72,9 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         returns (string memory)
     {
         _requireMinted(tokenId);
+        if (address(renderer) != address(0)) {
+            return renderer.tokenURI(tokenId);
+        }
         return "https://www.draup.xyz/members/members-01.json";
     }
 
@@ -101,6 +106,14 @@ contract DraupMembershipERC721 is ERC721, Ownable {
 
     function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
         merkleRoot = _merkleRoot;
+    }
+
+    function setRenderer(IRenderer _renderer) external onlyOwner {
+        renderer = _renderer;
+    }
+
+    function setBaseTokenURI(string calldata _baseTokenURI) external onlyOwner {
+        baseTokenURI = _baseTokenURI;
     }
 
     function withdrawAll() external {
