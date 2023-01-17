@@ -12,7 +12,7 @@ import {IRenderer} from "./IRenderer.sol";
 contract DraupMembershipERC721 is ERC721, Ownable {
     uint256 public immutable MAX_SUPPLY;
     uint256 public immutable ROYALTY = 7500;
-    uint256 public immutable MIN_HOLD_BLOCKS = 900_000;
+    bool public TRANSFERS_ALLOWED = false;
     IRenderer public renderer;
     string public baseTokenURI;
 
@@ -27,13 +27,10 @@ contract DraupMembershipERC721 is ERC721, Ownable {
     // Mapping to track who used their allowlist spot
     mapping(address => bool) private _claimed;
 
-    // Mapping to track when tokens were last transferred
-    mapping(uint256 => uint256) private _lastTransfer;
-
     error InvalidProof();
     error AlreadyClaimed();
     error MaxSupplyReached();
-    error LockupPeriodNotOver();
+    error TransfersNotAllowed();
 
     function mint(bytes32[] calldata merkleProof) public {
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, 1))));
@@ -57,11 +54,9 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         uint256 firstTokenId,
         uint256 batchSize
     ) internal virtual override {
-        // assumes chain is past block 900_000
-        if (block.number <= _lastTransfer[firstTokenId] + MIN_HOLD_BLOCKS) {
-            revert LockupPeriodNotOver();
+        if (!TRANSFERS_ALLOWED && from != address(0)) {
+            revert TransfersNotAllowed();
         }
-        _lastTransfer[firstTokenId] = block.number;
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 
@@ -106,6 +101,10 @@ contract DraupMembershipERC721 is ERC721, Ownable {
 
     function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
         merkleRoot = _merkleRoot;
+    }
+
+    function enableTransfers() external onlyOwner {
+        TRANSFERS_ALLOWED = true;
     }
 
     function setRenderer(IRenderer _renderer) external onlyOwner {

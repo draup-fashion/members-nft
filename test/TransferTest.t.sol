@@ -14,8 +14,6 @@ contract DraupMembershipERC721AllowListTest is Test {
     bytes32[] private merkleProof = new bytes32[](3);
 
     function setUp() public {
-        // transfer lock only works after lockup period number of blocks
-        vm.roll(1_000_000);
         draupMembershipERC721 = new DraupMembershipERC721(10);
         draupMembershipERC721.transferOwnership(owner);
         vm.deal(owner, 100 ether);
@@ -29,42 +27,69 @@ contract DraupMembershipERC721AllowListTest is Test {
         draupMembershipERC721.mint(merkleProof);
     }
 
-    function testSafeTransferBlocksRightAfterMinting() public {
+    function testOnlyAdminCanEnableTransfers() public {
         vm.startPrank(minter);
-        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.LockupPeriodNotOver.selector));
-        draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
+        vm.expectRevert(bytes("Ownable: caller is not the owner"));
+        draupMembershipERC721.enableTransfers();
+        bool transfersAllowed = draupMembershipERC721.TRANSFERS_ALLOWED();
+        assertEq(transfersAllowed, false);
     }
 
-    function testSafeTransferBlocksDuringLockup() public {
+    function testSafeTransferBlocksRightAfterMinting() public {
+        bool transfersAllowed = draupMembershipERC721.TRANSFERS_ALLOWED();
+        assertEq(transfersAllowed, false);
+        vm.startPrank(minter);
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
+        draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
+        address ownerId = draupMembershipERC721.ownerOf(1);
+        assertEq(ownerId, minter);
+    }
+
+    function testSafeTransferBlocksBeforeTransfersAreAllowed() public {
         vm.roll(1_500_000);
         vm.startPrank(minter);
-        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.LockupPeriodNotOver.selector));
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
         draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
+        address ownerId = draupMembershipERC721.ownerOf(1);
+        assertEq(ownerId, minter);
     }
 
-    function testSafeTransferWorksAfterLockup() public {
-        vm.roll(1_900_001);
+    function testSafeTransferWorksAfterTransfersAreAllowed() public {
+        vm.prank(owner);
+        draupMembershipERC721.enableTransfers();
         vm.startPrank(minter);
         draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
+        address ownerId = draupMembershipERC721.ownerOf(1);
+        assertEq(ownerId, recipient);
+        bool transfersAllowed = draupMembershipERC721.TRANSFERS_ALLOWED();
+        assertEq(transfersAllowed, true);
     }
 
     function testTransferBlocksRightAfterMinting() public {
         vm.startPrank(minter);
-        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.LockupPeriodNotOver.selector));
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
         draupMembershipERC721.transferFrom(minter, recipient, 1);
+        address ownerId = draupMembershipERC721.ownerOf(1);
+        assertEq(ownerId, minter);
     }
 
-    function testTransferBlocksDuringLockup() public {
+    function testTransferBlocksBeforeTransfersAreAllowed() public {
         vm.roll(1_500_000);
         vm.startPrank(minter);
-        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.LockupPeriodNotOver.selector));
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
         draupMembershipERC721.transferFrom(minter, recipient, 1);
+        address ownerId = draupMembershipERC721.ownerOf(1);
+        assertEq(ownerId, minter);
     }
 
-    function testTransferWorksAfterLockup() public {
-        vm.roll(1_900_001);
+    function testTransferWorksAfterTransfersAreAllowed() public {
+        vm.roll(1_000_000);
+        vm.prank(owner);
+        draupMembershipERC721.enableTransfers();
         vm.startPrank(minter);
         draupMembershipERC721.transferFrom(minter, recipient, 1);
+        address ownerId = draupMembershipERC721.ownerOf(1);
+        assertEq(ownerId, recipient);
     }
 
 
