@@ -3,13 +3,14 @@ pragma solidity ^0.8.17;
 
 import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import {IERC2981, IERC165} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
+import {DefaultOperatorFilterer} from "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
 import {PaddedString} from "./PadStringUtil.sol";
 import {IRenderer} from "./IRenderer.sol";
 
-contract DraupMembershipERC721 is ERC721, Ownable {
+contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     uint256 public immutable MAX_SUPPLY;
     uint256 public immutable ROYALTY = 7500;
     bool public TRANSFERS_ALLOWED = false;
@@ -59,6 +60,30 @@ contract DraupMembershipERC721 is ERC721, Ownable {
             revert TransfersNotAllowed();
         }
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public override onlyAllowedOperatorApproval(operator) {
+        super.setApprovalForAll(operator, approved);
+    }
+
+    function approve(address operator, uint256 tokenId) public override onlyAllowedOperatorApproval(operator) {
+        super.approve(operator, tokenId);
+    }
+
+    function transferFrom(address from, address to, uint256 tokenId) public override onlyAllowedOperator(from) {
+        super.transferFrom(from, to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override onlyAllowedOperator(from) {
+        super.safeTransferFrom(from, to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data)
+        public
+        override
+        onlyAllowedOperator(from)
+    {
+        super.safeTransferFrom(from, to, tokenId, data);
     }
 
     function tokenURI(uint256 tokenId)
