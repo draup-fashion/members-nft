@@ -24,7 +24,6 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
 
     uint256 public nextTokenId;
     bytes32 public merkleRoot;
-    string _BaseURI = "test";
 
     // Mapping to track who used their allowlist spot
     mapping(address => bool) private _claimed;
