@@ -15,11 +15,10 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     uint256 public immutable ROYALTY = 7500;
     bool public TRANSFERS_ALLOWED = false;
     IRenderer public renderer;
-    string public baseTokenURI;
+    string public baseTokenURI = 'https://assets.draup.xyz/member_pass/metadata/member_pass_';
 
     constructor(uint256 maxSupply) ERC721("Draup Membership", "DRAUP") {
         MAX_SUPPLY = maxSupply;
-        baseTokenURI = 'https://assets.draup.xyz/member_pass/metadata/member_pass_';
     }
 
     uint256 public nextTokenId;
@@ -141,10 +140,6 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
 
     function setBaseTokenURI(string calldata _baseTokenURI) external onlyOwner {
         baseTokenURI = _baseTokenURI;
-    }
-
-    function getBaseTokenURI() external view returns (string memory) {
-        return baseTokenURI;
     }
 
     function withdrawAll() external {
