@@ -37,7 +37,14 @@ contract DraupMembershipERC721MetadataTest is Test {
 
     function testMetadataURI() public {
         string memory uri1 = draupMembershipERC721.tokenURI(1);
-        assertEq(uri1, "https://www.draup.xyz/members/members-01.json");
+        string memory uri1Test = string(
+                abi.encodePacked(
+                    draupMembershipERC721.baseTokenURI(),
+                    PaddedString.digitsToString(1, 3),
+                    ".json"
+                )
+            );
+        assertEq(uri1, uri1Test);
     }
 
     function testNonOwnerCannotUpgradeRenderer() public {

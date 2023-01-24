@@ -2,11 +2,11 @@
 pragma solidity ^0.8.17;
 
 import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {IERC2981, IERC165} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
 import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
-import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
-import {IERC2981, IERC165} from "openzeppelin-contracts/contracts/interfaces/IERC2981.sol";
+import {PaddedString} from "./PadStringUtil.sol";
 import {IRenderer} from "./IRenderer.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable {
@@ -18,6 +18,7 @@ contract DraupMembershipERC721 is ERC721, Ownable {
 
     constructor(uint256 maxSupply) ERC721("Draup Membership", "DRAUP") {
         MAX_SUPPLY = maxSupply;
+        baseTokenURI = 'https://assets.draup.xyz/member_pass/metadata/member_pass_';
     }
 
     uint256 public nextTokenId;
@@ -70,12 +71,15 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         if (address(renderer) != address(0)) {
             return renderer.tokenURI(tokenId);
         }
-        return "https://www.draup.xyz/members/members-01.json";
+        return
+            string(
+                abi.encodePacked(
+                    baseTokenURI,
+                    PaddedString.digitsToString(tokenId, 3),
+                    ".json"
+                )
+            );
     }
-
-
-    // Royalties
-    // From https://github.com/holic/web3-scaffold/blob/main/packages/contracts/src/ERC721Base.sol
 
     function supportsInterface(bytes4 _interfaceId)
         public
@@ -96,7 +100,6 @@ contract DraupMembershipERC721 is ERC721, Ownable {
         return (address(this), (salePrice * ROYALTY) / 10000);
     }
 
-
     // Admin
 
     function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
@@ -113,6 +116,9 @@ contract DraupMembershipERC721 is ERC721, Ownable {
 
     function setBaseTokenURI(string calldata _baseTokenURI) external onlyOwner {
         baseTokenURI = _baseTokenURI;
+    }
+    function getBaseTokenURI() external view returns (string memory) {
+        return baseTokenURI;
     }
 
     function withdrawAll() external {
