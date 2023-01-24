@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /**
- * @title  PadStringUtil
+ * @title  PaddedString
  * @notice Borrows heavily from OpenZeppelin Strings contract:
  *         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol
  * @notice This library allows outputting an integer as a string of a fixed length with zero padding.

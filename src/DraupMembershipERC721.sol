@@ -7,7 +7,7 @@ import {DefaultOperatorFilterer} from "operator-filter-registry/src/DefaultOpera
 import {ERC721} from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
-import {PaddedString} from "./PadStringUtil.sol";
+import {PaddedString} from "./PaddedString.sol";
 import {IRenderer} from "./IRenderer.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {

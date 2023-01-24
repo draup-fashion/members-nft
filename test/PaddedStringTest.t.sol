@@ -2,7 +2,7 @@ pragma solidity >=0.8.10 <0.9.0;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import {PaddedString} from "../src/PadStringUtil.sol";
+import {PaddedString} from "../src/PaddedString.sol";
 
 contract PadStringUtilTest is Test {
     function bytes32ToString(bytes32 x) public pure returns (string memory value) {
