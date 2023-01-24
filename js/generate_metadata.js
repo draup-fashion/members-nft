@@ -6,7 +6,7 @@ if (args.length < 3) {
     process.exit(1)
 }
 let targetDir = args[args.length - 1]
-let totalFrames = 238
+let totalFrames = 349
 let totalSupply = 888
 let metaInfo = {
     "name": "Draup Member Pass",
