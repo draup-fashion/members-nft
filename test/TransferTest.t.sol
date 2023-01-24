@@ -14,7 +14,7 @@ contract DraupMembershipERC721AllowListTest is Test {
     bytes32[] private merkleProof = new bytes32[](3);
 
     function setUp() public {
-        draupMembershipERC721 = new DraupMembershipERC721(10);
+        draupMembershipERC721 = new DraupMembershipERC721(10, 'https://assets.draup.xyz/member_pass/metadata/member_pass_');
         draupMembershipERC721.transferOwnership(owner);
         vm.deal(owner, 100 ether);
         vm.deal(minter, 100 ether);

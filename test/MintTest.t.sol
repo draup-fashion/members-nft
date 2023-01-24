@@ -15,7 +15,7 @@ contract DraupMembershipERC721MintTest is Test {
     function setUp() public {
         // transfer lock only works after lockup period number of blocks
         vm.roll(1_000_000);
-        draupMembershipERC721 = new DraupMembershipERC721(3);
+        draupMembershipERC721 = new DraupMembershipERC721(3, 'https://assets.draup.xyz/member_pass/metadata/member_pass_');
         draupMembershipERC721.transferOwnership(owner);
         vm.deal(owner, 100 ether);
         vm.deal(minter, 100 ether);
