@@ -12,7 +12,7 @@ import {IRenderer} from "./IRenderer.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     uint256 public immutable MAX_SUPPLY;
-    uint256 public immutable ROYALTY = 7500;
+    uint256 public immutable ROYALTY = 750;
     bool public transfersAllowed = false;
     IRenderer public renderer;
     string public baseTokenURI;
