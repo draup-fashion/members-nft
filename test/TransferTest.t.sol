@@ -40,8 +40,8 @@ contract DraupMembershipERC721AllowListTest is Test {
         assertEq(transfersAllowed, false);
         vm.startPrank(minter);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
-        draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
-        address ownerId = draupMembershipERC721.ownerOf(1);
+        draupMembershipERC721.safeTransferFrom(minter, recipient, 0);
+        address ownerId = draupMembershipERC721.ownerOf(0);
         assertEq(ownerId, minter);
     }
 
@@ -49,8 +49,8 @@ contract DraupMembershipERC721AllowListTest is Test {
         vm.roll(1_500_000);
         vm.startPrank(minter);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
-        draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
-        address ownerId = draupMembershipERC721.ownerOf(1);
+        draupMembershipERC721.safeTransferFrom(minter, recipient, 0);
+        address ownerId = draupMembershipERC721.ownerOf(0);
         assertEq(ownerId, minter);
     }
 
@@ -58,8 +58,8 @@ contract DraupMembershipERC721AllowListTest is Test {
         vm.prank(owner);
         draupMembershipERC721.enableTransfers();
         vm.startPrank(minter);
-        draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
-        address ownerId = draupMembershipERC721.ownerOf(1);
+        draupMembershipERC721.safeTransferFrom(minter, recipient, 0);
+        address ownerId = draupMembershipERC721.ownerOf(0);
         assertEq(ownerId, recipient);
         bool transfersAllowed = draupMembershipERC721.transfersAllowed();
         assertEq(transfersAllowed, true);
@@ -68,8 +68,8 @@ contract DraupMembershipERC721AllowListTest is Test {
     function testTransferBlocksRightAfterMinting() public {
         vm.startPrank(minter);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
-        draupMembershipERC721.transferFrom(minter, recipient, 1);
-        address ownerId = draupMembershipERC721.ownerOf(1);
+        draupMembershipERC721.transferFrom(minter, recipient, 0);
+        address ownerId = draupMembershipERC721.ownerOf(0);
         assertEq(ownerId, minter);
     }
 
@@ -77,8 +77,8 @@ contract DraupMembershipERC721AllowListTest is Test {
         vm.roll(1_500_000);
         vm.startPrank(minter);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
-        draupMembershipERC721.transferFrom(minter, recipient, 1);
-        address ownerId = draupMembershipERC721.ownerOf(1);
+        draupMembershipERC721.transferFrom(minter, recipient, 0);
+        address ownerId = draupMembershipERC721.ownerOf(0);
         assertEq(ownerId, minter);
     }
 
@@ -87,8 +87,8 @@ contract DraupMembershipERC721AllowListTest is Test {
         vm.prank(owner);
         draupMembershipERC721.enableTransfers();
         vm.startPrank(minter);
-        draupMembershipERC721.transferFrom(minter, recipient, 1);
-        address ownerId = draupMembershipERC721.ownerOf(1);
+        draupMembershipERC721.transferFrom(minter, recipient, 0);
+        address ownerId = draupMembershipERC721.ownerOf(0);
         assertEq(ownerId, recipient);
     }
 

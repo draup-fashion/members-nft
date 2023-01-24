@@ -36,11 +36,11 @@ contract DraupMembershipERC721MetadataTest is Test {
     }
 
     function testMetadataURI() public {
-        string memory uri1 = draupMembershipERC721.tokenURI(1);
+        string memory uri1 = draupMembershipERC721.tokenURI(0);
         string memory uri1Test = string(
                 abi.encodePacked(
                     draupMembershipERC721.baseTokenURI(),
-                    PaddedString.digitsToString(1, 3),
+                    PaddedString.digitsToString(0, 3),
                     ".json"
                 )
             );
@@ -59,8 +59,8 @@ contract DraupMembershipERC721MetadataTest is Test {
         vm.prank(owner);
         draupMembershipERC721.setRenderer(renderer);
         assertEq(address(renderer), address(draupMembershipERC721.renderer()));
-        string memory uri1 = draupMembershipERC721.tokenURI(1);
-        assertEq(uri1, "https://www.example.com/1.json");
+        string memory uri1 = draupMembershipERC721.tokenURI(0);
+        assertEq(uri1, "https://www.example.com/0.json");
     }
 
 }

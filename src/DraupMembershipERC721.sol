@@ -45,7 +45,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         if (nextTokenId > MAX_SUPPLY) {
             revert MaxSupplyReached();
         }
-        _mint(msg.sender, nextTokenId);
+        _mint(msg.sender, nextTokenId - 1);
     }
 
     // token trading is disabled initially but will be enabled by the owner

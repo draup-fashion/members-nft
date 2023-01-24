@@ -42,7 +42,7 @@ contract DraupMembershipERC721MintTest is Test {
 
     function testMintEmitsTransferEvent() public {
         vm.expectEmit(true, true, true, false);
-        emit Transfer(address(0x0), minter, 1);
+        emit Transfer(address(0x0), minter, 0);
         vm.startPrank(minter);
         draupMembershipERC721.mint(merkleProof);
     }
