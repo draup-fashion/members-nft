@@ -48,6 +48,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         _mint(msg.sender, nextTokenId);
     }
 
+    // token trading is disabled initially but will be enabled by the owner
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -60,6 +61,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 
+    // on-chain royalty enforcement integration
     function setApprovalForAll(address operator, bool approved) public override onlyAllowedOperatorApproval(operator) {
         super.setApprovalForAll(operator, approved);
     }
@@ -84,6 +86,8 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         super.safeTransferFrom(from, to, tokenId, data);
     }
 
+    // upgradeable token renderer based on web3-scaffold example by frolic.eth
+    // https://github.com/holic/web3-scaffold/blob/main/packages/contracts/src/IRenderer.sol
     function tokenURI(uint256 tokenId)
         public
         view
@@ -104,6 +108,8 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
             );
     }
 
+    // Royalty info provided via EIP-2981
+    // https://eips.ethereum.org/EIPS/eip-2981
     function supportsInterface(bytes4 _interfaceId)
         public
         view
@@ -123,8 +129,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         return (address(this), (salePrice * ROYALTY) / 10000);
     }
 
-    // Admin
-
+    // Admin actions
     function setMerkleRoot(bytes32 _merkleRoot) external onlyOwner {
         merkleRoot = _merkleRoot;
     }
