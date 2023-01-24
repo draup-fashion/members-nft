@@ -31,12 +31,12 @@ contract DraupMembershipERC721AllowListTest is Test {
         vm.startPrank(minter);
         vm.expectRevert(bytes("Ownable: caller is not the owner"));
         draupMembershipERC721.enableTransfers();
-        bool transfersAllowed = draupMembershipERC721.TRANSFERS_ALLOWED();
+        bool transfersAllowed = draupMembershipERC721.transfersAllowed();
         assertEq(transfersAllowed, false);
     }
 
     function testSafeTransferBlocksRightAfterMinting() public {
-        bool transfersAllowed = draupMembershipERC721.TRANSFERS_ALLOWED();
+        bool transfersAllowed = draupMembershipERC721.transfersAllowed();
         assertEq(transfersAllowed, false);
         vm.startPrank(minter);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.TransfersNotAllowed.selector));
@@ -61,7 +61,7 @@ contract DraupMembershipERC721AllowListTest is Test {
         draupMembershipERC721.safeTransferFrom(minter, recipient, 1);
         address ownerId = draupMembershipERC721.ownerOf(1);
         assertEq(ownerId, recipient);
-        bool transfersAllowed = draupMembershipERC721.TRANSFERS_ALLOWED();
+        bool transfersAllowed = draupMembershipERC721.transfersAllowed();
         assertEq(transfersAllowed, true);
     }
 

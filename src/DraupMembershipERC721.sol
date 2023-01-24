@@ -13,20 +13,19 @@ import {IRenderer} from "./IRenderer.sol";
 contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     uint256 public immutable MAX_SUPPLY;
     uint256 public immutable ROYALTY = 7500;
-    bool public TRANSFERS_ALLOWED = false;
+    bool public transfersAllowed = false;
     IRenderer public renderer;
     string public baseTokenURI;
-
-    constructor(uint256 maxSupply, string memory baseURI) ERC721("Draup Membership", "DRAUP") {
-        MAX_SUPPLY = maxSupply;
-        baseTokenURI = baseURI;
-    }
-
     uint256 public nextTokenId;
     bytes32 public merkleRoot;
 
     // Mapping to track who used their allowlist spot
     mapping(address => bool) private _claimed;
+
+    constructor(uint256 maxSupply, string memory baseURI) ERC721("Draup Membership", "DRAUP") {
+        MAX_SUPPLY = maxSupply;
+        baseTokenURI = baseURI;
+    }
 
     error InvalidProof();
     error AlreadyClaimed();
@@ -55,7 +54,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         uint256 firstTokenId,
         uint256 batchSize
     ) internal virtual override {
-        if (!TRANSFERS_ALLOWED && from != address(0)) {
+        if (!transfersAllowed && from != address(0)) {
             revert TransfersNotAllowed();
         }
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
@@ -131,7 +130,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     }
 
     function enableTransfers() external onlyOwner {
-        TRANSFERS_ALLOWED = true;
+        transfersAllowed = true;
     }
 
     function setRenderer(IRenderer _renderer) external onlyOwner {
