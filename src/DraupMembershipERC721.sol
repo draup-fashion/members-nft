@@ -142,6 +142,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     function setBaseTokenURI(string calldata _baseTokenURI) external onlyOwner {
         baseTokenURI = _baseTokenURI;
     }
+
     function getBaseTokenURI() external view returns (string memory) {
         return baseTokenURI;
     }
