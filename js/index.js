@@ -26,10 +26,8 @@ const day = new Date().getDate();
 
 // (5) generate a proof
 for (const [i, v] of tree.entries()) {
-  if (v[0] === "0x8d0f68bCF513e0e55cB3C18fCf5feb8dBd0d9C16") {
-    const proof = tree.getProof(i);
-    console.log('Value:', v);
-    console.log('Proof:', proof);
-  }
+  let proof = tree.getProof(i);
+  console.log('Value:', v);
+  console.log('Proof:', proof);
 }
 
