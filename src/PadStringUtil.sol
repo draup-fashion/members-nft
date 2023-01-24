@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Adapted from OpenZeppelin's utils/Strings.sol
 pragma solidity ^0.8.0;
 
 /**
- * @dev Output numbers as padded strings.
+ * @title  PadStringUtil
+ * @notice Borrows heavily from OpenZeppelin Strings contract:
+ *         https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Strings.sol
+ * @notice This library allows outputting an integer as a string of a fixed length with zero padding.
  */
 library PaddedString {
     bytes16 private constant _SYMBOLS = "0123456789";
