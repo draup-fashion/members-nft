@@ -2,6 +2,4 @@
 
 _Get access to Draup community_
 
-NFT pass that symbolizes the holders Draup community membership and offers exclusive community access.
-
-Status: Under Development
+DRAUP's emblem awarded to the creators, curators and coders forging our future of fashion.
