@@ -12,7 +12,7 @@ import {IRenderer} from "./IRenderer.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     uint256 public immutable MAX_SUPPLY;
-    uint256 public immutable ROYALTY = 750;
+    uint256 public constant ROYALTY = 750;
     bool public transfersAllowed = false;
     IRenderer public renderer;
     string public baseTokenURI;
@@ -51,14 +51,13 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     // token trading is disabled initially but will be enabled by the owner
     function _beforeTokenTransfer(
         address from,
-        address to,
-        uint256 firstTokenId,
-        uint256 batchSize
+        address,
+        uint256,
+        uint256
     ) internal virtual override {
         if (!transfersAllowed && from != address(0)) {
             revert TransfersNotAllowed();
         }
-        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 
     // on-chain royalty enforcement integration
