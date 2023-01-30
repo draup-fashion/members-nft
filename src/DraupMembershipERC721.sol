@@ -22,7 +22,7 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     // Mapping to track who used their allowlist spot
     mapping(address => bool) private _claimed;
 
-    constructor(uint256 maxSupply, string memory baseURI) ERC721("Draup Membership", "DRAUP") {
+    constructor(uint256 maxSupply, string memory baseURI) ERC721("DRAUP SEAL", "$EAL") {
         MAX_SUPPLY = maxSupply;
         baseTokenURI = baseURI;
     }

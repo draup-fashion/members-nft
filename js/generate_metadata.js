@@ -10,7 +10,7 @@ let totalFrames = 349
 let totalSupply = 888
 let metaInfo = {
     "name": "Draup Member Pass",
-    "description": "NFT pass that symbolizes the holders Draup community membership and offers exclusive community access.",
+    "description": "DRAUP's emblem awarded to the creators, curators and coders forging our future of fashion.",
     "external_url": "https://www.draup.xyz",
     "animation_url": "https://assets.draup.xyz/member_pass/video/DRAUP_members_pass.mp4",
     "image": "https://assets.draup.xyz/member_pass/frames/DRAUP_member_frame_"
