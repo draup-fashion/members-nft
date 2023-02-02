@@ -30,12 +30,19 @@ contract DraupMembershipERC721MintTest is Test {
         merkleProof[1] = bytes32('med3af');
         vm.startPrank(minter);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.InvalidProof.selector));
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
+    }
+
+    function testMintingAllowedBlocksInvalidMerkleProof() public {
+        merkleProof[1] = bytes32('med3af');
+        vm.startPrank(minter);
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.InvalidProof.selector));
+        draupMembershipERC721.mintingAllowed(merkleProof, address(0));
     }
 
     function testMintAllowsValidMerkleProof() public {
         vm.startPrank(minter);
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
         uint256 newBalance = draupMembershipERC721.balanceOf(minter);
         assertEq(newBalance, 1);
     }
@@ -44,21 +51,21 @@ contract DraupMembershipERC721MintTest is Test {
         vm.expectEmit(true, true, true, false);
         emit Transfer(address(0x0), minter, 0);
         vm.startPrank(minter);
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
     }
 
     function testMintPreventsReuseOfAllowListSpot() public {
         vm.startPrank(minter);
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter), 1);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.AlreadyClaimed.selector));
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter), 1);
     }
 
     function testMintEnforcesMaxSupply() public {
         vm.prank(minter);
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter), 1);
 
         bytes32[] memory merkleProof2 = new bytes32[](3);
@@ -68,7 +75,7 @@ contract DraupMembershipERC721MintTest is Test {
         address minter2 = 0x502367Ea6eA7ED256A55Ff70340EB81bF0e11bC2;
         assertEq(draupMembershipERC721.balanceOf(minter2), 0);
         vm.prank(minter2);
-        draupMembershipERC721.mint(merkleProof2);
+        draupMembershipERC721.mint(merkleProof2, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter2), 1);
 
         bytes32[] memory merkleProof3 = new bytes32[](4);
@@ -79,7 +86,7 @@ contract DraupMembershipERC721MintTest is Test {
         address minter3 = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
         assertEq(draupMembershipERC721.balanceOf(minter3), 0);
         vm.prank(minter3);
-        draupMembershipERC721.mint(merkleProof3);
+        draupMembershipERC721.mint(merkleProof3, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter3), 1);
 
         bytes32[] memory merkleProof4 = new bytes32[](3);
@@ -90,7 +97,7 @@ contract DraupMembershipERC721MintTest is Test {
         assertEq(draupMembershipERC721.balanceOf(minter4), 0);
         vm.prank(minter4);
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.MaxSupplyReached.selector));
-        draupMembershipERC721.mint(merkleProof4);
+        draupMembershipERC721.mint(merkleProof4, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter4), 0);
     }
 }
