@@ -1,5 +1,6 @@
 .DS_Store
 .gas-snapshot
+js/gen_*_allowlist.js
 
 # Compiler files
 cache/
