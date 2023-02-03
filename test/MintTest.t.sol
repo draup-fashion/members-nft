@@ -47,6 +47,12 @@ contract DraupMembershipERC721MintTest is Test {
         assertEq(newBalance, 1);
     }
 
+    function testMintingAllowedAllowsValidMerkleProof() public {
+        vm.startPrank(minter);
+        address allowedAddress = draupMembershipERC721.mintingAllowed(merkleProof, address(0));
+        assertEq(allowedAddress, minter);
+    }
+
     function testMintEmitsTransferEvent() public {
         vm.expectEmit(true, true, true, false);
         emit Transfer(address(0x0), minter, 0);
@@ -61,6 +67,16 @@ contract DraupMembershipERC721MintTest is Test {
         vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.AlreadyClaimed.selector));
         draupMembershipERC721.mint(merkleProof, address(0));
         assertEq(draupMembershipERC721.balanceOf(minter), 1);
+    }
+
+    function testMintingAllowedPreventsReuseOfAllowListSpot() public {
+        vm.startPrank(minter);
+        address mintCheck = draupMembershipERC721.mintingAllowed(merkleProof, address(0));
+        assertEq(mintCheck, minter);
+        draupMembershipERC721.mint(merkleProof, address(0));
+        assertEq(draupMembershipERC721.balanceOf(minter), 1);
+        vm.expectRevert(abi.encodeWithSelector(DraupMembershipERC721.AlreadyClaimed.selector));
+        draupMembershipERC721.mintingAllowed(merkleProof, address(0));
     }
 
     function testMintEnforcesMaxSupply() public {
