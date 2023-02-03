@@ -17,3 +17,6 @@
 [submodule "lib/draup-utils"]
 	path = lib/draup-utils
 	url = https://github.com/draup-fashion/draup-utils
+[submodule "lib/delegation-registry"]
+	path = lib/delegation-registry
+	url = https://github.com/delegatecash/delegation-registry

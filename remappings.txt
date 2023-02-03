@@ -4,3 +4,4 @@ solmate/=lib/solmate/src/
 openzeppelin-contracts/=lib/openzeppelin-contracts
 operator-filter-registry/=lib/operator-filter-registry
 draup-utils/=lib/draup-utils
+delegation-registry/=lib/delegation-registry

@@ -9,10 +9,12 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "openzeppelin-contracts/contracts/utils/cryptography/MerkleProof.sol";
 import {PaddedString} from "draup-utils/src/PaddedString.sol";
 import {IRenderer} from "./IRenderer.sol";
+import {IDelegationRegistry} from "delegation-registry/src/IDelegationRegistry.sol";
 
 contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
     uint256 public immutable MAX_SUPPLY;
     uint256 public constant ROYALTY = 750;
+    address constant DELEGATION_REGISTRY = 0x00000000000076A84feF008CDAbe6409d2FE638B;
     bool public transfersAllowed = false;
     IRenderer public renderer;
     string public baseTokenURI;
@@ -27,25 +29,41 @@ contract DraupMembershipERC721 is ERC721, Ownable, DefaultOperatorFilterer {
         baseTokenURI = baseURI;
     }
 
+    error InvalidDelegate();
     error InvalidProof();
     error AlreadyClaimed();
     error MaxSupplyReached();
     error TransfersNotAllowed();
 
-    function mint(bytes32[] calldata merkleProof) public {
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, 1))));
+    function mintingAllowed(bytes32[] calldata merkleProof, address vault) public view returns (address) {
+        address requester = msg.sender;
+        if (vault != address(0)) {
+            IDelegationRegistry delegateCash = IDelegationRegistry(DELEGATION_REGISTRY);
+            bool isDelegateValid = delegateCash.checkDelegateForContract(msg.sender, vault, address(this));
+            if (!isDelegateValid) {
+                revert InvalidDelegate();
+            }
+            requester = vault;
+        }
+        if (nextTokenId >= MAX_SUPPLY) {
+            revert MaxSupplyReached();
+        }
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(requester, 1))));
         if (!MerkleProof.verify(merkleProof, merkleRoot, leaf)) {
             revert InvalidProof();
         }
-        if (_claimed[msg.sender]) {
+        if (_claimed[requester]) {
             revert AlreadyClaimed();
         }
-        _claimed[msg.sender] = true;
+        return requester;
+    }
+
+
+    function mint(bytes32[] calldata merkleProof, address vault) public {
+        address allowedMinter = mintingAllowed(merkleProof, vault);
+        _claimed[allowedMinter] = true;
         nextTokenId++;
-        if (nextTokenId > MAX_SUPPLY) {
-            revert MaxSupplyReached();
-        }
-        _mint(msg.sender, nextTokenId - 1);
+        _mint(allowedMinter, nextTokenId - 1);
     }
 
     // token trading is disabled initially but will be enabled by the owner

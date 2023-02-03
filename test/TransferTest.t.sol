@@ -24,7 +24,7 @@ contract DraupMembershipERC721AllowListTest is Test {
         merkleProof[1] = hex'b83b0d782919b4ecc6cb4f744339823754ed3d3e980cdf8204194bfa6bab1de8';
         merkleProof[2] = hex'e1196e36db67e723e3b325b53c9f124eb38460ed3c1e0b6a7b501cf9478f6ab0';
         vm.prank(minter);
-        draupMembershipERC721.mint(merkleProof);
+        draupMembershipERC721.mint(merkleProof, address(0));
     }
 
     function testOnlyAdminCanEnableTransfers() public {
