@@ -14,24 +14,24 @@ const allowList = {
     }
 }
 
-const goerliList = fs.readFileSync('./output/goerli_seals.txt', {flag:'r'}).toString().split("\n");
-
-let gList = []
-for(i in goerliList) {
-    gList.push([goerliList[i], "1"]);
+const loadAllowList = (chain) => {
+    const loadedList = fs.readFileSync(`./output/${chain}_seals.txt`, {flag:'r'}).toString().split("\n");
+    let parsedList = []
+    for(i in loadedList) {
+        parsedList.push([loadedList[i], "1"]);
+    }
+    const tree = StandardMerkleTree.of(parsedList, ["address", "uint256"]);
+    allowList[chain]['root'] = tree.root;
+    console.log(`Merkle Root for ${chain}: `, allowList['goerli']['root']);
+    let proofList = {}
+    for (const [i, v] of tree.entries()) {
+        let proof = tree.getProof(i);
+        proofList[v[0]] = proof;
+    }
+    allowList[chain]['proofs'] = proofList;
 }
 
-const tree = StandardMerkleTree.of(gList, ["address", "uint256"]);
-allowList['goerli']['root'] = tree.root;
-console.log('Merkle Root:', allowList['goerli']['root']);
-
-let proofList = {}
-for (const [i, v] of tree.entries()) {
-    let proof = tree.getProof(i);
-    proofList[v[0]] = proof;
-    console.log('Value:', v);
-    console.log('Proof:', proof);
-}
-allowList['goerli']['proofs'] = proofList;
+loadAllowList('goerli');
+loadAllowList('mainnet');
 
 fs.writeFileSync(`output/draup_seal_allow_list.json`, JSON.stringify(allowList))
