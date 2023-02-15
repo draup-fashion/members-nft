@@ -22,7 +22,7 @@ const loadAllowList = (chain) => {
     }
     const tree = StandardMerkleTree.of(parsedList, ["address", "uint256"]);
     allowList[chain]['root'] = tree.root;
-    console.log(`Merkle Root for ${chain}: `, allowList['goerli']['root']);
+    console.log(`Merkle Root for ${chain}: `, allowList[chain]['root']);
     let proofList = {}
     for (const [i, v] of tree.entries()) {
         let proof = tree.getProof(i);
