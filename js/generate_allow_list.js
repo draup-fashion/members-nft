@@ -18,6 +18,9 @@ const loadAllowList = (chain) => {
     const loadedList = fs.readFileSync(`./output/${chain}_seals.txt`, {flag:'r'}).toString().split("\n");
     let parsedList = []
     for(i in loadedList) {
+        if (loadedList[i] == "") {
+            continue;
+        }
         parsedList.push([loadedList[i], "1"]);
     }
     const tree = StandardMerkleTree.of(parsedList, ["address", "uint256"]);
