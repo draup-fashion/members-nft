@@ -22,7 +22,7 @@ const loadAllowList = (chain) => {
         if (loadedList[i] == "") {
             continue;
         }
-        const parsedAddress = ethers.utils.getAddress(loadedList[i]);
+        const parsedAddress = ethers.getAddress(loadedList[i]);
         parsedList.push([parsedAddress, "1"]);
     }
     const tree = StandardMerkleTree.of(parsedList, ["address", "uint256"]);
