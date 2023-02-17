@@ -1,4 +1,5 @@
 const { StandardMerkleTree } = require("@openzeppelin/merkle-tree");
+const { ethers } = require("ethers");
 const fs = require('fs');
 
 const allowList = {
@@ -21,7 +22,8 @@ const loadAllowList = (chain) => {
         if (loadedList[i] == "") {
             continue;
         }
-        parsedList.push([loadedList[i], "1"]);
+        const parsedAddress = ethers.utils.getAddress(loadedList[i]);
+        parsedList.push([parsedAddress, "1"]);
     }
     const tree = StandardMerkleTree.of(parsedList, ["address", "uint256"]);
     allowList[chain]['root'] = tree.root;
