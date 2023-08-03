@@ -16,7 +16,9 @@ const allowList = {
 }
 
 const loadAllowList = (chain) => {
-    const loadedList = fs.readFileSync(`./output/${chain}_seals.txt`, {flag:'r'}).toString().split("\n");
+    const chainSrcFile = `./output/${chain}_seals.txt`
+    console.log(`Loading ${chain} allow list from file ${chainSrcFile}`)
+    const loadedList = fs.readFileSync(chainSrcFile, {flag:'r'}).toString().split("\n");
     let parsedList = []
     for(i in loadedList) {
         if (loadedList[i] == "") {
